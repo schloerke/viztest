@@ -1,0 +1,20 @@
+Package: viztest
+Title: Visual Testing
+Version: 0.0.0.9000
+Authors@R: person("Barret", "Schloerke", email = "barret@rstudio.com", role = c("aut", "cre"))
+Description: Enables users to extract examples and produce images of each example plot, htmlwidget, or shiny application.  With two folders, comparisons can be made between images.  Useful for determining if visualizations within packages have changed between version updates.
+Depends: R (>= 3.4.1)
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: pkgload,
+    devtools,
+    progress,
+    withr,
+    tools,
+    knitr,
+    shinytest,
+    utils
+Remotes:
+    schloerke/webshot@appshot_shinyapp
+RoxygenNote: 6.0.1
