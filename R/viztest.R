@@ -210,7 +210,7 @@ packageVersion(\"", pkg$package, "\")
 detach_package <- function(pkg_name) {
   pkg <- paste0("package:", pkg_name)
   while(pkg %in% search()) {
-    message("Detaching package: ", pkg, " (", packageVersion(pkg), ")")
+    message("Detaching package: ", pkg)
     detach(pkg, unload = TRUE, character.only = TRUE)
   }
   TRUE
