@@ -57,7 +57,7 @@ viztest <- function(
         "Or use `stomp != TRUE`"
       )
     }
-    message("Deleting folder: ", output_dir)
+    # message("Deleting folder: ", output_dir)
     # unlink(output_dir, recursive = TRUE)
   }
 
