@@ -156,7 +156,7 @@ packageVersion(\"", pkg$package, "\")
     # run each rmd example independently
     pb <- progress::progress_bar$new(
       total = length(rd_txts),
-      format = paste0(":current/:total ellapsed::elapsed eta::eta [:bar]"),
+      format = paste0(":current/:total ellapsed::elapsed eta::eta [:bar] :rd_name"),
       show_after = 0,
       clear = FALSE
     )
@@ -177,7 +177,7 @@ packageVersion(\"", pkg$package, "\")
             "```"
           )
 
-          pb$tick(tokens = list(name_val = rd_name))
+          pb$tick(tokens = list(rd_name = rd_name))
           if (isTRUE(save_individual)) {
             save_file <- paste0(rd_name, ".Rmd")
             cat(knitr_txt, file = save_file)
