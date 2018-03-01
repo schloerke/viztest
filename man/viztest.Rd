@@ -4,22 +4,21 @@
 \alias{viztest}
 \title{Visually Test Package Examples}
 \usage{
-viztest(pkg = ".", old_pkg = paste0("cran::",
-  devtools::as.package(pkg)$package),
-  output_dir = file.path(paste0("viztest-", devtools::as.package(pkg)$package,
-  "-", devtools::as.package(pkg)$version)), ..., delay = 2, fig.width = 8,
-  fig.height = 6, vwidth = 992, vheight = 744, test = TRUE,
-  run = FALSE, stomp = FALSE, cache = TRUE, save_individual = TRUE,
-  browse = TRUE)
+viztest(pkg = ".", old_pkg = paste0(devtools::as.package(pkg)$package),
+  output_dir = file.path(paste("viztest", devtools::as.package(pkg)$package,
+  devtools::as.package(pkg)$version, sep = "-")), ..., delay = 2,
+  fig.width = 8, fig.height = 6, vwidth = 992, vheight = 744,
+  test = TRUE, run = FALSE, stomp = FALSE, cache = TRUE,
+  save_individual = TRUE, resize = "50\%", browse = TRUE)
 }
 \arguments{
 \item{pkg}{Local R package to load with devtools}
 
-\item{old_pkg}{R package name description.  This should either be a CRAN or GitHub name to work with \code{devtools::\link[devtools]{install_cran}} or \code{devtools::\link[devtools]{install_github}} respectively.  To be explicit, \code{old_pkg} needs to start with \code{"cran::"} (\code{"cran::viztest"}) or \code{"github::"} (\code{'github::viztest'})}
+\item{old_pkg}{R package name description.  This should either be a CRAN or GitHub name to work with \code{devtools::\link[devtools]{install_cran}} or \code{devtools::\link[devtools]{install_github}} respectively.}
 
-\item{output_dir}{Save directory. Defaults to "viztest-PKG-VERSION"}
+\item{output_dir}{Output directory. Defaults to "viztest-PKG-VERSION"}
 
-\item{...}{ignored}
+\item{...}{parameters sent to \code{\link{viz_compare}}}
 
 \item{delay}{Amount of delay to use before capturing}
 
@@ -37,6 +36,9 @@ If \code{FALSE}, code in \code{\\testonly{}} will be commented out.}
 \item{cache}{If \code{TRUE}, the local R package examples will be cached with knitr for faster execution.}
 
 \item{save_individual}{If \code{TRUE}, individual example knitr files will be saved}
+
+\item{resize}{\code{resize} parameter supplied to \code{webshot::\link[webshot]{resize}}.
+Defaults to shrink each dimension to 50%. Shrinking will not alter the original files.}
 
 \item{browse}{If \code{TRUE}, diff.html in \code{output_dir} will be opened}
 }

@@ -4,10 +4,13 @@
 \alias{viz_compare}
 \title{Compare two output folders}
 \usage{
-viz_compare(output_dir, browse = TRUE)
+viz_compare(output_dir, resize = "50\%", browse = TRUE)
 }
 \arguments{
 \item{output_dir}{Output folder created by \code{viztest}}
+
+\item{resize}{\code{resize} parameter supplied to \code{webshot::\link[webshot]{resize}}.
+Defaults to shrink each dimension to 50%. Shrinking will not alter the original files.}
 
 \item{browse}{If \code{TRUE}, diff.html in \code{output_dir} will be opened}
 }
