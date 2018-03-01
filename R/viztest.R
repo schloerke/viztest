@@ -193,10 +193,10 @@ packageVersion(\"", pkg$package, "\")
     })
   }
 
-  message("Running CRAN library on local examples")
+  message("\nRunning CRAN library on local examples")
   knit_examples(old_pkg, cran_dir, cache = TRUE)
 
-  message("Running local library on local examples")
+  message("\nRunning local library on local examples")
   knit_examples(paste0(pkg$package, "-", pkg$version), local_dir, cache = cache)
 
   # message(length(dir(file.path(output_dir, "images"))), " files in ", output_dir)
