@@ -155,6 +155,8 @@ packageVersion(\"", pkg$package, "\")
       knitr_head_txt
     }
 
+    # detach pkg
+    detach_package(pkg$package)
 
     # run each rmd example independently
     pb <- progress::progress_bar$new(
@@ -167,7 +169,6 @@ packageVersion(\"", pkg$package, "\")
 
     withr::with_dir(example_dir, {
       withr::with_libpaths(rel_lib_dir, action = "prefix", {
-        detach_package(pkg$package)
 
         purrr::map2(rd_names, rd_txts, function(rd_name, rd_txt) {
           knitr_head_txt <- make_knitr_head_txt(rd_name)
@@ -198,7 +199,6 @@ packageVersion(\"", pkg$package, "\")
 
   message("Running local library on local examples")
   knit_examples(paste0(pkg$package, "-", pkg$version), local_dir, cache = cache)
-
 
   # message(length(dir(file.path(output_dir, "images"))), " files in ", output_dir)
   # cat("\n")
