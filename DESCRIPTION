@@ -2,7 +2,7 @@ Package: viztest
 Title: Visual Testing
 Version: 0.0.0.9000
 Authors@R: person("Barret", "Schloerke", email = "barret@rstudio.com", role = c("aut", "cre"))
-Description: Enables users to extract examples and produce images of each example plot, htmlwidget, or shiny application.  With two folders, comparisons can be made between images.  Useful for determining if visualizations within packages have changed between version updates.
+Description: 'viztest' executes all examples of a local R package against itself and a CRAN or GitHub version of a package using 'knitr'.  'viztest' then pixel compares any images or webshots produced while running the local examples.
 Depends: R (>= 3.4.1)
 License: MIT + file LICENSE
 Encoding: UTF-8

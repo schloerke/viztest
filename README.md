@@ -1,6 +1,6 @@
 # viztest
 
-`viztest` executes all examples of a local R package against itself and a CRAN or GitHub version of a package using knitr.  `viztest` then compares any visual snapshots of each image, htmlwidget, or shiny application.
+`viztest` executes all examples of a local R package against itself and a CRAN or GitHub version of a package using knitr.  `viztest` then pixel compares any images or webshots produced while running the local examples.
 
 ## Example
 
