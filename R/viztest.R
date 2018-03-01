@@ -6,10 +6,11 @@
 #' of each visual item produced, such as plots, htmlwidgets, shiny application objects.
 #'
 #' @export
+#' @inheritParams viz_compare
 #' @param pkg Local R package to load with devtools
-#' @param old_pkg R package name description.  This should either be a CRAN or GitHub name to work with \code{devtools::\link[devtools]{install_cran}} or \code{devtools::\link[devtools]{install_github}} respectively.  To be explicit, \code{old_pkg} needs to start with \code{"cran::"} (\code{"cran::viztest"}) or \code{"github::"} (\code{'github::viztest'})
-#' @param output_dir Save directory. Defaults to "viztest-PKG-VERSION"
-#' @param ... ignored
+#' @param old_pkg R package name description.  This should either be a CRAN or GitHub name to work with \code{devtools::\link[devtools]{install_cran}} or \code{devtools::\link[devtools]{install_github}} respectively.
+#' @param output_dir Output directory. Defaults to "viztest-PKG-VERSION"
+#' @param ... parameters sent to \code{\link{viz_compare}}
 #' @param delay Amount of delay to use before capturing
 #' @param fig.width,fig.height Figure width and height in inches
 #' @param vwidth,vheight Screenshot size in pixels
@@ -19,7 +20,6 @@
 #' @param stomp If \code{TRUE}, allows \code{viztest} to reexecute in an existing output directory
 #' @param cache If \code{TRUE}, the local R package examples will be cached with knitr for faster execution.
 #' @param save_individual If \code{TRUE}, individual example knitr files will be saved
-#' @param browse If \code{TRUE}, diff.html in \code{output_dir} will be opened
 #' @importFrom utils packageVersion
 #' @examples
 #' \dontrun{
@@ -46,6 +46,7 @@ viztest <- function(
   stomp = FALSE,
   cache = TRUE,
   save_individual = TRUE,
+  resize = TRUE,
   browse = TRUE
 ) {
 
@@ -75,6 +76,7 @@ viztest <- function(
     dir.create,
     recursive = TRUE, showWarnings = FALSE
   )
+if(FALSE) {
   message("\n\nInstalling old version")
   withr::with_libpaths(cran_lib_dir, action = "prefix", {
     if (grepl("/", old_pkg, fixed = TRUE)) {
@@ -90,10 +92,11 @@ viztest <- function(
   withr::with_libpaths(local_lib_dir, action = "prefix", {
     devtools::install(pkg)
   })
+}
 
   # get all the doc files from the local pkg
   devtools_rd_files <- utils::getFromNamespace("rd_files", "devtools")
-  rd_files <- devtools_rd_files(pkg) # %>% head()
+  rd_files <- devtools_rd_files(pkg) %>% head()
 
   if (length(rd_files) == 0) {
     message("No .Rd files found")
@@ -199,7 +202,7 @@ packageVersion(\"", pkg$package, "\")
 
   # message(length(dir(file.path(output_dir, "images"))), " files in ", output_dir)
   # cat("\n")
-  viz_compare(output_dir, browse = browse)
+  viz_compare(output_dir, resize = resize, browse = browse)
 }
 
 
