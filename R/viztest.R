@@ -113,8 +113,7 @@ if(FALSE) {
       knitr_head_txt <- paste0(
         # nolint start
 "---
-title: \"", pkg$package, " viztest\"
-author: \"", pkg$maintainer, "\"
+title: \"", pkg$package, " viztest - ", file, "\"
 date: \"", format(Sys.Date(), "%m/%d/%Y"), "\"
 ---
 
