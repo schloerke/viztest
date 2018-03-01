@@ -1,49 +1,26 @@
-## Gather example files
-
-# altered from pkgload::run_example
-get_example_txt <- function (path, test = FALSE, run = FALSE) {
-  if (!file.exists(path)) {
-    stop("'", path, "' does not exist", call. = FALSE)
-  }
-  # tmp <- tempfile(fileext = ".R")
-  # tmp <- tempfile(fileext = ".R")
-  tmp <- textConnection("tmpVal", open = "w")
-  on.exit({
-    close(tmp)
-  })
-  if (getRversion() < "3.2") {
-    tools::Rd2ex(path, out = tmp, commentDontrun = !run)
-  }
-  else {
-    tools::Rd2ex(path, out = tmp, commentDontrun = !run, commentDonttest = !test)
-  }
-  ret <- textConnectionValue(tmp)
-  if (length(ret) > 0) {
-    ret <- paste(ret, collapse = "\n")
-  } else {
-    ret <- ""
-  }
-  invisible(ret)
-}
-# get_example_txt(devtools:::rd_files()[2]) %>% cat()
 
 
-#' Visual Test Package Examples
+#' Visually Test Package Examples
 #'
-#' Execute all package examples in independent knitr files to capture images of each visual item produced, such as plots, htmlwidgets, shiny application objects.
+#' Execute all package examples in independent knitr files to capture images
+#' of each visual item produced, such as plots, htmlwidgets, shiny application objects.
 #'
 #' @export
-#' @param pkg Package to load with devtools
-#' @param output_dir Save directory. Defaults to "viztest/PKG-VERSION"
+#' @param pkg Local R package to load with devtools
+#' @param old_pkg R package name description.  This should either be a CRAN or GitHub name to work with \code{devtools::\link[devtools]{install_cran}} or \code{devtools::\link[devtools]{install_github}} respectively.  To be explicit, \code{old_pkg} needs to start with \code{"cran::"} (\code{"cran::viztest"}) or \code{"github::"} (\code{'github::viztest'})
+#' @param output_dir Save directory. Defaults to "viztest-PKG-VERSION"
 #' @param ... ignored
-#' @param delay amount of delay to use before capturing
+#' @param delay Amount of delay to use before capturing
 #' @param fig.width,fig.height Figure width and height in inches
 #' @param vwidth,vheight Screenshot size in pixels
 #' @param test If \code{TRUE}, code in \code{\\donttest{}} will be commented out.
 #'             If \code{FALSE}, code in \code{\\testonly{}} will be commented out.
 #' @param run If \code{TRUE}, code in \code{\\dontrun{}} will be commented out.
-#' @param stomp If \code{TRUE}, the prior output folder will be completely deleted before executing
-#' @param save_individual If \code{TRUE}, the individual knitr files used to produce the images will be saved in the output folder
+#' @param stomp If \code{TRUE}, allows \code{viztest} to reexecute in an existing output directory
+#' @param cache If \code{TRUE}, the local R package examples will be cached with knitr for faster execution.
+#' @param save_individual If \code{TRUE}, individual example knitr files will be saved
+#' @param browse If \code{TRUE}, diff.html in \code{output_dir} will be opened
+#' @importFrom utils packageVersion
 #' @examples
 #' \dontrun{
 #' # R session running in local R package folder
@@ -51,11 +28,16 @@ get_example_txt <- function (path, test = FALSE, run = FALSE) {
 #' }
 viztest <- function(
   pkg = ".",
+  # ?pkgdepends::remotes
+  old_pkg = paste0("cran::", devtools::as.package(pkg)$package),
   output_dir = file.path(
-    "viztest",
-    paste0(devtools::as.package(pkg)$package, "-", devtools::as.package(pkg)$version)
+    # paste0("viztest-", devtools::as.package(pkg)$package
+    paste0("viztest-", devtools::as.package(pkg)$package, "-", devtools::as.package(pkg)$version)
+    #,
+    # paste0(devtools::as.package(pkg)$package, "-", devtools::as.package(pkg)$version)
   ),
   ...,
+  # local_lib_dir = file.path("viztest/local"),
   delay = 2,
   fig.width = 8,
   fig.height = 6,
@@ -63,7 +45,9 @@ viztest <- function(
   vheight = 744,
   test = TRUE, run = FALSE,
   stomp = FALSE,
-  save_individual = FALSE
+  cache = TRUE,
+  save_individual = TRUE,
+  browse = TRUE
 ) {
 
   # remove and create output dir
@@ -77,15 +61,42 @@ viztest <- function(
     message("Deleting folder: ", output_dir)
     # unlink(output_dir, recursive = TRUE)
   }
-  dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
   # make sure it's the latest docs
   pkg <- devtools::as.package(pkg)
   devtools::document(pkg)
 
+  # install locally
+  cran_dir <- file.path(output_dir, rel_cran_dir)
+  local_dir <- file.path(output_dir, rel_local_dir)
+  cran_lib_dir <- file.path(cran_dir, rel_lib_dir)
+  local_lib_dir <- file.path(local_dir, rel_lib_dir)
+  lapply(
+    c(cran_lib_dir,local_lib_dir),
+    dir.create,
+    recursive = TRUE, showWarnings = FALSE
+  )
+  message("\n\nInstalling old version")
+  withr::with_libpaths(cran_lib_dir, action = "prefix", {
+    if (grepl("^cran::", old_pkg)) {
+      devtools::install_cran(gsub("^cran::", "", old_pkg))
+    } else if(grepl("^github::", old_pkg)) {
+      devtools::install_github(gsub("^github::", "", old_pkg))
+    } else {
+      stop("'old_pkg' must start with either 'cran::' or 'github::'")
+    }
+    # devtools::install_cran(pkg$package)
+    # devtools::install_github(pkg$package)
+    # pkgman::pkg_install(old_pkg)
+  })
+  message("\n\nInstalling new, local version")
+  withr::with_libpaths(local_lib_dir, action = "prefix", {
+    devtools::install(pkg)
+  })
+
   # get all the doc files from the local pkg
   devtools_rd_files <- utils::getFromNamespace("rd_files", "devtools")
-  rd_files <- devtools_rd_files(pkg)
+  rd_files <- devtools_rd_files(pkg) # %>% head()
 
   if (length(rd_files) == 0) {
     message("No .Rd files found")
@@ -96,62 +107,113 @@ viztest <- function(
   rd_txts <- lapply(rd_files, get_example_txt, test = test, run = run)
   rd_names <- gsub(".Rd", "", names(rd_txts), fixed = TRUE)
 
-  example_txts <- paste0(
-    "# ", rd_names, "\n",
-    "```{r ", rd_names, " }\n",
-    unlist(rd_txts),
-    "\n```"
-  )
+  knit_examples <- function(name, example_dir, ..., cache = FALSE) {
 
-  knitr_head_txt <- paste0(
-    # nolint start
+    make_knitr_head_txt <- function(file) {
+      knitr_head_txt <- paste0(
+        # nolint start
 "---
 title: \"", pkg$package, " viztest\"
 author: \"", pkg$maintainer, "\"
 date: \"", format(Sys.Date(), "%m/%d/%Y"), "\"
 ---
 
+```{r, eval = FALSE, include = FALSE}
+# command to compile Rmd
+withr::with_dir(\"", normalizePath("."), "\", {
+  withr::with_libpaths(
+    \"", normalizePath(rel_lib_dir), "\",
+    action = \"prefix\",
+    {
+      knitr::knit(\"FILE.Rmd\")
+    }
+  )
+})
+```
+
 ```{r _knitr_setup, include = FALSE }
 library(knitr)
 opts_chunk$set(
-  fig.path = \"", output_dir, .Platform$file.sep, "images", .Platform$file.sep, "\",
+  cache = ", cache, ",
+  fig.path = \"", rel_images_dir, .Platform$file.sep, "\",
   fig.width = ", fig.width, ",
   fig.height = ", fig.height, ",
   screenshot.opts = list(vwidth = ", vwidth, ", vheight = ", vheight, ", delay = ", delay, ")
 )
+set.seed(", 66 + 97 + 144 + 144 + 101 + 116, ")
+```
+```{r}
 library(", pkg$package, ")
+packageVersion(\"", pkg$package, "\")
 ```
 
 "
-# nolint end
-  )
-  knitr_txts <- paste0(knitr_head_txt, example_txts)
-
-  # save a global Rmd file
-  cat(
-    paste0(knitr_head_txt, paste0(example_txts, collapse = "\n\n")),
-    file = file.path(output_dir, "_examples.Rmd")
-  )
-
-  # run each rmd example independently
-  pb <- progress::progress_bar$new(
-    total = length(knitr_txts),
-    format = ":current/:total ellapsed::elapsed eta::eta [:bar] :name_val",
-    show_after = 0,
-    clear = FALSE
-  )
-  pb$tick(0)
-
-  lapply(seq_along(rd_names), function(i) {
-    if (isTRUE(save_individual)) {
-      cat(knitr_txts[[i]], file = file.path(output_dir, paste0(rd_names[[i]], ".Rmd")))
+# 66 + 97 + 144 + 144 + 101 + 116 = "B a r r e t" in ascii
+  # nolint end
+      )
+      knitr_head_txt
     }
-    pb$tick(tokens = list(name_val = rd_names[[i]]))
-    ret <- knitr::knit(text = knitr_txts[[i]], quiet = TRUE)
-    ret
-  })
 
-  message("produced ", length(dir(file.path(output_dir, "images"))), " example images")
-  cat("\n")
-  invisible()
+
+    # run each rmd example independently
+    pb <- progress::progress_bar$new(
+      total = length(rd_txts),
+      format = paste0(":current/:total ellapsed::elapsed eta::eta [:bar]"),
+      show_after = 0,
+      clear = FALSE
+    )
+    pb$tick(0)
+
+    withr::with_dir(example_dir, {
+      withr::with_libpaths(rel_lib_dir, action = "prefix", {
+        detach_package(pkg$package)
+
+        purrr::map2(rd_names, rd_txts, function(rd_name, rd_txt) {
+          knitr_head_txt <- make_knitr_head_txt(rd_name)
+          knitr_txt <- paste0(
+            knitr_head_txt,
+            "# ", rd_name, "\n",
+            "```{r ", rd_name, " }\n",
+            "### Package: ", name, "\n",
+            rd_txt, "\n",
+            "```"
+          )
+
+          pb$tick(tokens = list(name_val = rd_name))
+          if (isTRUE(save_individual)) {
+            save_file <- paste0(rd_name, ".Rmd")
+            cat(knitr_txt, file = save_file)
+            knitr::knit(save_file, quiet = TRUE)
+          } else {
+            knitr::knit(text = knitr_txt, quiet = TRUE)
+          }
+        })
+      })
+    })
+  }
+
+  message("Running CRAN library on local examples")
+  knit_examples(old_pkg, cran_dir, cache = TRUE)
+
+  message("Running local library on local examples")
+  knit_examples(paste0(pkg$package, "-", pkg$version), local_dir, cache = cache)
+
+
+  # message(length(dir(file.path(output_dir, "images"))), " files in ", output_dir)
+  # cat("\n")
+  viz_compare(output_dir, browse = browse)
+}
+
+
+
+
+
+
+detach_package <- function(pkg_name) {
+  pkg <- paste0("package:", pkg_name)
+  while(pkg %in% search()) {
+    message("Detaching package: ", pkg, " (", packageVersion(pkg), ")")
+    detach(pkg, unload = TRUE, character.only = TRUE)
+  }
+  TRUE
 }

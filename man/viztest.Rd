@@ -2,22 +2,26 @@
 % Please edit documentation in R/viztest.R
 \name{viztest}
 \alias{viztest}
-\title{Visual Test Package Examples}
+\title{Visually Test Package Examples}
 \usage{
-viztest(pkg = ".", output_dir = file.path("viztest",
-  paste0(devtools::as.package(pkg)$package, "-",
-  devtools::as.package(pkg)$version)), ..., delay = 2, fig.width = 8,
+viztest(pkg = ".", old_pkg = paste0("cran::",
+  devtools::as.package(pkg)$package),
+  output_dir = file.path(paste0("viztest-", devtools::as.package(pkg)$package,
+  "-", devtools::as.package(pkg)$version)), ..., delay = 2, fig.width = 8,
   fig.height = 6, vwidth = 992, vheight = 744, test = TRUE,
-  run = FALSE, stomp = FALSE, save_individual = FALSE)
+  run = FALSE, stomp = FALSE, cache = TRUE, save_individual = TRUE,
+  browse = TRUE)
 }
 \arguments{
-\item{pkg}{Package to load with devtools}
+\item{pkg}{Local R package to load with devtools}
 
-\item{output_dir}{Save directory. Defaults to "viztest/PKG-VERSION"}
+\item{old_pkg}{R package name description.  This should either be a CRAN or GitHub name to work with \code{devtools::\link[devtools]{install_cran}} or \code{devtools::\link[devtools]{install_github}} respectively.  To be explicit, \code{old_pkg} needs to start with \code{"cran::"} (\code{"cran::viztest"}) or \code{"github::"} (\code{'github::viztest'})}
+
+\item{output_dir}{Save directory. Defaults to "viztest-PKG-VERSION"}
 
 \item{...}{ignored}
 
-\item{delay}{amount of delay to use before capturing}
+\item{delay}{Amount of delay to use before capturing}
 
 \item{fig.width, fig.height}{Figure width and height in inches}
 
@@ -28,12 +32,17 @@ If \code{FALSE}, code in \code{\\testonly{}} will be commented out.}
 
 \item{run}{If \code{TRUE}, code in \code{\\dontrun{}} will be commented out.}
 
-\item{stomp}{If \code{TRUE}, the prior output folder will be completely deleted before executing}
+\item{stomp}{If \code{TRUE}, allows \code{viztest} to reexecute in an existing output directory}
 
-\item{save_individual}{If \code{TRUE}, the individual knitr files used to produce the images will be saved in the output folder}
+\item{cache}{If \code{TRUE}, the local R package examples will be cached with knitr for faster execution.}
+
+\item{save_individual}{If \code{TRUE}, individual example knitr files will be saved}
+
+\item{browse}{If \code{TRUE}, diff.html in \code{output_dir} will be opened}
 }
 \description{
-Execute all package examples in independent knitr files to capture images of each visual item produced, such as plots, htmlwidgets, shiny application objects.
+Execute all package examples in independent knitr files to capture images
+of each visual item produced, such as plots, htmlwidgets, shiny application objects.
 }
 \examples{
 \dontrun{
