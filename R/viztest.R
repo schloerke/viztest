@@ -8,7 +8,9 @@
 #' @export
 #' @inheritParams viz_compare
 #' @param pkg Local R package to load with devtools
-#' @param old_pkg R package name description.  This should either be a CRAN or GitHub name to work with \code{devtools::\link[devtools]{install_cran}} or \code{devtools::\link[devtools]{install_github}} respectively.
+#' @param old_pkg R package name description.  This should either be a CRAN or GitHub name to
+#'        work with \code{devtools::\link[devtools]{install_cran}}
+#'        or \code{devtools::\link[devtools]{install_github}} respectively.
 #' @param output_dir Output directory. Defaults to "viztest-PKG-VERSION"
 #' @param ... parameters sent to \code{\link{viz_compare}}
 #' @param delay Amount of delay to use before capturing
@@ -18,7 +20,8 @@
 #'             If \code{FALSE}, code in \code{\\testonly{}} will be commented out.
 #' @param run If \code{TRUE}, code in \code{\\dontrun{}} will be commented out.
 #' @param stomp If \code{TRUE}, allows \code{viztest} to reexecute in an existing output directory
-#' @param cache If \code{TRUE}, the local R package examples will be cached with knitr for faster execution.
+#' @param cache If \code{TRUE}, the local R package examples will be cached with knitr for faster
+#'        execution.  The \code{old_pkg} will always be cached as it's source code does not change.
 #' @param save_individual If \code{TRUE}, individual example knitr files will be saved
 #' @importFrom utils packageVersion
 #' @examples

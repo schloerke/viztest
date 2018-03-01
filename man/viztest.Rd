@@ -9,12 +9,14 @@ viztest(pkg = ".", old_pkg = paste0(devtools::as.package(pkg)$package),
   devtools::as.package(pkg)$version, sep = "-")), ..., delay = 2,
   fig.width = 8, fig.height = 6, vwidth = 992, vheight = 744,
   test = TRUE, run = FALSE, stomp = FALSE, cache = TRUE,
-  save_individual = TRUE, resize = "50\%", browse = TRUE)
+  save_individual = TRUE, resize = TRUE, browse = TRUE)
 }
 \arguments{
 \item{pkg}{Local R package to load with devtools}
 
-\item{old_pkg}{R package name description.  This should either be a CRAN or GitHub name to work with \code{devtools::\link[devtools]{install_cran}} or \code{devtools::\link[devtools]{install_github}} respectively.}
+\item{old_pkg}{R package name description.  This should either be a CRAN or GitHub name to
+work with \code{devtools::\link[devtools]{install_cran}}
+or \code{devtools::\link[devtools]{install_github}} respectively.}
 
 \item{output_dir}{Output directory. Defaults to "viztest-PKG-VERSION"}
 
@@ -33,12 +35,14 @@ If \code{FALSE}, code in \code{\\testonly{}} will be commented out.}
 
 \item{stomp}{If \code{TRUE}, allows \code{viztest} to reexecute in an existing output directory}
 
-\item{cache}{If \code{TRUE}, the local R package examples will be cached with knitr for faster execution.}
+\item{cache}{If \code{TRUE}, the local R package examples will be cached with knitr for faster
+execution.  The \code{old_pkg} will always be cached as it's source code does not change.}
 
 \item{save_individual}{If \code{TRUE}, individual example knitr files will be saved}
 
 \item{resize}{\code{resize} parameter supplied to \code{webshot::\link[webshot]{resize}}.
-Defaults to shrink each dimension to 50%. Shrinking will not alter the original files.}
+Defaults (\code{TRUE}) to shrink each dimension to 50%. Shrinking will not alter
+the original files.}
 
 \item{browse}{If \code{TRUE}, diff.html in \code{output_dir} will be opened}
 }
