@@ -28,16 +28,15 @@
 #' }
 viztest <- function(
   pkg = ".",
-  # ?pkgdepends::remotes
-  old_pkg = paste0("cran::", devtools::as.package(pkg)$package),
+  old_pkg = paste0(devtools::as.package(pkg)$package),
   output_dir = file.path(
-    # paste0("viztest-", devtools::as.package(pkg)$package
-    paste0("viztest-", devtools::as.package(pkg)$package, "-", devtools::as.package(pkg)$version)
-    #,
-    # paste0(devtools::as.package(pkg)$package, "-", devtools::as.package(pkg)$version)
+    # viztest-leaflet-2.0.0
+    paste(
+      "viztest", devtools::as.package(pkg)$package, devtools::as.package(pkg)$version,
+      sep = "-"
+    )
   ),
   ...,
-  # local_lib_dir = file.path("viztest/local"),
   delay = 2,
   fig.width = 8,
   fig.height = 6,
@@ -78,12 +77,10 @@ viztest <- function(
   )
   message("\n\nInstalling old version")
   withr::with_libpaths(cran_lib_dir, action = "prefix", {
-    if (grepl("^cran::", old_pkg)) {
-      devtools::install_cran(gsub("^cran::", "", old_pkg))
-    } else if(grepl("^github::", old_pkg)) {
-      devtools::install_github(gsub("^github::", "", old_pkg))
+    if (grepl("/", old_pkg, fixed = TRUE)) {
+      devtools::install_github(old_pkg)
     } else {
-      stop("'old_pkg' must start with either 'cran::' or 'github::'")
+      devtools::install_cran(old_pkg)
     }
     # devtools::install_cran(pkg$package)
     # devtools::install_github(pkg$package)
