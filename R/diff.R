@@ -21,36 +21,8 @@ viz_compare <- function(output_dir, resize = TRUE, browse = TRUE) {
       on.exit({
         unlink(tmpdir, recursive = TRUE)
       })
-      resize_images <- function(from_folder, rel_dir) {
-        to_folder <- file.path(tmpdir, paste0(rel_dir, "_images"))
-        dir.create(to_folder, recursive = TRUE)
-        from_files <- dir(from_folder, full.names = TRUE)
-        file.copy(
-          from_files,
-          to_folder,
-          recursive = TRUE
-        )
-        message("Shrinking ", from_folder)
-        pb <- progress::progress_bar$new(
-          total = length(from_files),
-          format = paste0(":current/:total ellapsed::elapsed eta::eta [:bar] :to_file"),
-          show_after = 0,
-          clear = FALSE
-        )
-        pb$tick(0)
-
-        lapply(
-          dir(to_folder, full.names = TRUE),
-          function(to_file) {
-            pb$tick(tokens = list(to_file = basename(to_file)))
-            webshot::resize(to_file, resize)
-          }
-        )
-
-        to_folder
-      }
-      cran_images <- resize_images(cran_images, rel_cran_dir)
-      local_images <- resize_images(local_images, rel_local_dir)
+      cran_images <- resize_images(cran_images, rel_cran_dir, tmpdir, resize)
+      local_images <- resize_images(local_images, rel_local_dir, tmpdir, resize)
     }
 
     ret <- shinytest::diffviewer_widget(cran_images, local_images)
