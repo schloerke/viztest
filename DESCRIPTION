@@ -14,7 +14,9 @@ Imports: pkgload,
     tools,
     knitr,
     shinytest,
-    utils
+    utils,
+    purrr,
+    htmlwidgets
 Remotes:
     schloerke/webshot@appshot_shinyapp
 RoxygenNote: 6.0.1
