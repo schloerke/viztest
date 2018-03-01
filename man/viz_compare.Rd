@@ -4,10 +4,12 @@
 \alias{viz_compare}
 \title{Compare two output folders}
 \usage{
-viz_compare(output_a, output_b)
+viz_compare(output_dir, browse = TRUE)
 }
 \arguments{
-\item{output_a, output_b}{folders to compare that contain output images}
+\item{output_dir}{Output folder created by \code{viztest}}
+
+\item{browse}{If \code{TRUE}, diff.html in \code{output_dir} will be opened}
 }
 \description{
 Compare two output folders
