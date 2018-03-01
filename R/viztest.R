@@ -135,6 +135,7 @@ withr::with_dir(\"", normalizePath("."), "\", {
 library(knitr)
 opts_chunk$set(
   cache = ", cache, ",
+  cache.path = \"", rel_cache_dir, .Platform$file.sep, "\",
   fig.path = \"", rel_images_dir, .Platform$file.sep, "\",
   fig.width = ", fig.width, ",
   fig.height = ", fig.height, ",
