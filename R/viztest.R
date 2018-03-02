@@ -79,7 +79,7 @@ viztest <- function(
     dir.create,
     recursive = TRUE, showWarnings = FALSE
   )
-if(FALSE) {
+
   message("\n\nInstalling old version")
   withr::with_libpaths(cran_lib_dir, action = "prefix", {
     if (grepl("/", old_pkg, fixed = TRUE)) {
@@ -95,7 +95,6 @@ if(FALSE) {
   withr::with_libpaths(local_lib_dir, action = "prefix", {
     devtools::install(pkg)
   })
-}
 
   # get all the doc files from the local pkg
   devtools_rd_files <- utils::getFromNamespace("rd_files", "devtools")
@@ -202,8 +201,6 @@ packageVersion(\"", pkg$package, "\")
   message("\nRunning local library on local examples")
   knit_examples(paste0(pkg$package, "-", pkg$version), local_dir, cache = cache)
 
-  # message(length(dir(file.path(output_dir, "images"))), " files in ", output_dir)
-  # cat("\n")
   viz_compare(output_dir, resize = resize, browse = browse)
 }
 
