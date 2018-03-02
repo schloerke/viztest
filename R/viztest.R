@@ -99,7 +99,7 @@ if(FALSE) {
 
   # get all the doc files from the local pkg
   devtools_rd_files <- utils::getFromNamespace("rd_files", "devtools")
-  rd_files <- devtools_rd_files(pkg) %>% head()
+  rd_files <- devtools_rd_files(pkg) # %>% head()
 
   if (length(rd_files) == 0) {
     message("No .Rd files found")
