@@ -176,9 +176,6 @@ packageVersion("<< pkg_name(pkg) >>")
       )
     }
 
-    # detach pkg
-    detach_package(pkg$package)
-
     # run each rmd example independently
     pb <- progress::progress_bar$new(
       total = length(rd_txts),
@@ -206,9 +203,9 @@ packageVersion("<< pkg_name(pkg) >>")
           if (isTRUE(save_individual)) {
             save_file <- paste0(rd_name, ".Rmd")
             cat(knitr_txt, file = save_file)
-            knitr::knit(save_file, quiet = TRUE)
+            callr_knit_file(save_file)
           } else {
-            knitr::knit(text = knitr_txt, quiet = TRUE)
+            callr_knit_text(knitr_txt)
           }
         })
       })
@@ -229,11 +226,11 @@ packageVersion("<< pkg_name(pkg) >>")
 
 
 
-detach_package <- function(pkg_name) {
-  pkg <- paste0("package:", pkg_name)
-  while(pkg %in% search()) {
-    message("Detaching package: ", pkg)
-    detach(pkg, unload = TRUE, character.only = TRUE)
-  }
-  TRUE
-}
+# detach_package <- function(pkg_name) {
+#   pkg <- paste0("package:", pkg_name)
+#   while(pkg %in% search()) {
+#     message("Detaching package: ", pkg)
+#     detach(pkg, unload = TRUE, character.only = TRUE)
+#   }
+#   TRUE
+# }
