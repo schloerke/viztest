@@ -32,9 +32,13 @@ pkg_version <- function(pkg) {
 #' @param test If \code{TRUE}, code in \code{\\donttest{}} will be commented out.
 #'             If \code{FALSE}, code in \code{\\testonly{}} will be commented out.
 #' @param run If \code{TRUE}, code in \code{\\dontrun{}} will be commented out.
-#' @param stomp If \code{TRUE}, allows \code{viztest} to reexecute in an existing output directory
-#' @param cache If \code{TRUE}, the local R package examples will be cached with knitr for faster
-#'        execution.  The \code{old_pkg} will always be cached as it's source code does not change.
+#' @param stomp If \code{TRUE}, allows \code{viztest} to reexecute in an existing output
+#'        directory
+#' @param cache If \code{TRUE}, the local R package examples will be cached with knitr
+#'        for faster execution.  The \code{old_pkg} will always be cached as it's source
+#'        code does not change.
+#' @param document If \code{TRUE}, the local package will be documented before the
+#'        examples are extracted
 #' @param save_individual If \code{TRUE}, individual example knitr files will be saved
 #' @importFrom utils packageVersion
 #' @examples
@@ -58,6 +62,7 @@ viztest <- function(
   test = TRUE, run = FALSE,
   stomp = FALSE,
   cache = TRUE,
+  document = TRUE,
   save_individual = TRUE,
   resize = TRUE,
   browse = TRUE
@@ -77,6 +82,10 @@ viztest <- function(
 
   # make sure it's the latest docs
   pkg <- as_pkg(pkg)
+
+  if (isTRUE(document)) {
+    callr_document(pkg)
+  }
 
   # install locally
   cran_dir <- file.path(output_dir, rel_cran_dir)
