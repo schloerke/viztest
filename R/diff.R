@@ -8,6 +8,7 @@
 #' @param browse If \code{TRUE}, diff.html in \code{output_dir} will be opened
 #' @export
 #' @importFrom utils browseURL
+#' @importFrom stats runif
 viz_compare <- function(output_dir, resize = TRUE, browse = TRUE) {
   withr::with_dir(output_dir, {
     cran_images <- file.path(rel_cran_dir, rel_images_dir)

@@ -1,6 +1,5 @@
 
 
-
 resize_images <- function(from_folder, rel_dir, tmpdir, resize) {
   to_folder <- file.path(tmpdir, paste0(rel_dir, "_images"))
   dir.create(to_folder, recursive = TRUE)
