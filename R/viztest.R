@@ -105,8 +105,6 @@ viztest <- function(
     } else {
       devtools::install_cran(old_pkg)
     }
-    # devtools::install_cran(pkg$package)
-    # devtools::install_github(pkg$package)
     # pkgman::pkg_install(old_pkg)
   })
   message("\n\nInstalling new, local version")
@@ -130,21 +128,20 @@ viztest <- function(
   knit_examples <- function(name, example_dir, ..., cache = FALSE) {
 
     make_knitr_head_txt <- function(file) {
-      knitr_head_txt <- paste0(
-        # nolint start
-"---
-title: \"", pkg$package, " viztest - ", file, "\"
-date: \"", format(Sys.Date(), "%m/%d/%Y"), "\"
+      glue::glue(
+'---
+title: "<< pkg$package >> viztest - << file >>"
+date: "<< format(Sys.Date(), "%m/%d/%Y") >>"
 ---
 
 ```{r, eval = FALSE, include = FALSE}
 # command to compile Rmd
-withr::with_dir(\"", normalizePath("."), "\", {
+withr::with_dir("<< normalizePath(".") >>", {
   withr::with_libpaths(
-    \"", normalizePath(rel_lib_dir), "\",
-    action = \"prefix\",
+    "<< normalizePath(rel_lib_dir) >>",
+    action = "prefix",
     {
-      knitr::knit(\"FILE.Rmd\")
+      knitr::knit("<< file >>.Rmd")
     }
   )
 })
@@ -153,25 +150,30 @@ withr::with_dir(\"", normalizePath("."), "\", {
 ```{r _knitr_setup, include = FALSE }
 library(knitr)
 opts_chunk$set(
-  cache = ", cache, ",
-  cache.path = \"", rel_cache_dir, .Platform$file.sep, "\",
-  fig.path = \"", rel_images_dir, .Platform$file.sep, "\",
-  fig.width = ", fig.width, ",
-  fig.height = ", fig.height, ",
-  screenshot.opts = list(vwidth = ", vwidth, ", vheight = ", vheight, ", delay = ", delay, ")
+  cache = << cache >>,
+  cache.path = "<< rel_cache_dir >><< .Platform$file.sep >>",
+  fig.path = "<< rel_images_dir >><< .Platform$file.sep >>",
+  fig.width = << fig.width >>,
+  fig.height = << fig.height >>,
+  screenshot.opts = list(
+    vwidth = << vwidth >>,
+    vheight = << vheight >>,
+    delay = << delay >>
+  )
 )
-set.seed(", 66 + 97 + 144 + 144 + 101 + 116, ")
+set.seed(<< 66 + 97 + 144 + 144 + 101 + 116 >>)
 ```
 ```{r}
-library(", pkg$package, ")
-packageVersion(\"", pkg$package, "\")
+library(<< pkg_name(pkg) >>)
+packageVersion("<< pkg_name(pkg) >>")
 ```
 
-"
+',
 # 66 + 97 + 144 + 144 + 101 + 116 = "B a r r e t" in ascii
   # nolint end
+        .open = "<<",
+        .close = ">>"
       )
-      knitr_head_txt
     }
 
     # detach pkg
