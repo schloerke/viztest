@@ -4,12 +4,11 @@
 \alias{viztest}
 \title{Visually Test Package Examples}
 \usage{
-viztest(pkg = ".", old_pkg = paste0(devtools::as.package(pkg)$package),
-  output_dir = file.path(paste("viztest", devtools::as.package(pkg)$package,
-  devtools::as.package(pkg)$version, sep = "-")), ..., delay = 2,
+viztest(pkg = ".", old_pkg = pkg_name(pkg), output_dir = paste("viztest",
+  pkg_name(pkg), pkg_version(pkg), sep = "-"), ..., delay = 2,
   fig.width = 8, fig.height = 6, vwidth = 992, vheight = 744,
   test = TRUE, run = FALSE, stomp = FALSE, cache = TRUE,
-  save_individual = TRUE, resize = TRUE, browse = TRUE)
+  document = TRUE, save_individual = TRUE, resize = TRUE, browse = TRUE)
 }
 \arguments{
 \item{pkg}{Local R package to load with devtools}
@@ -33,10 +32,15 @@ If \code{FALSE}, code in \code{\\testonly{}} will be commented out.}
 
 \item{run}{If \code{TRUE}, code in \code{\\dontrun{}} will be commented out.}
 
-\item{stomp}{If \code{TRUE}, allows \code{viztest} to reexecute in an existing output directory}
+\item{stomp}{If \code{TRUE}, allows \code{viztest} to reexecute in an existing output
+directory}
 
-\item{cache}{If \code{TRUE}, the local R package examples will be cached with knitr for faster
-execution.  The \code{old_pkg} will always be cached as it's source code does not change.}
+\item{cache}{If \code{TRUE}, the local R package examples will be cached with knitr
+for faster execution.  The \code{old_pkg} will always be cached as it's source
+code does not change.}
+
+\item{document}{If \code{TRUE}, the local package will be documented before the
+examples are extracted}
 
 \item{save_individual}{If \code{TRUE}, individual example knitr files will be saved}
 

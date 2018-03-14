@@ -2,5 +2,6 @@
 
 export(viz_compare)
 export(viztest)
+importFrom(stats,runif)
 importFrom(utils,browseURL)
 importFrom(utils,packageVersion)
