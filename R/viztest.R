@@ -1,5 +1,18 @@
 
 
+as_pkg <- function(...) {
+  devtools::as.package(...)
+}
+pkg_name <- function(pkg) {
+  as_pkg(pkg)$package
+}
+pkg_version <- function(pkg) {
+  as_pkg(pkg)$version
+}
+
+
+
+
 #' Visually Test Package Examples
 #'
 #' Execute all package examples in independent knitr files to capture images
@@ -31,13 +44,10 @@
 #' }
 viztest <- function(
   pkg = ".",
-  old_pkg = paste0(devtools::as.package(pkg)$package),
-  output_dir = file.path(
-    # viztest-leaflet-2.0.0
-    paste(
-      "viztest", devtools::as.package(pkg)$package, devtools::as.package(pkg)$version,
-      sep = "-"
-    )
+  old_pkg = pkg_name(pkg),
+  output_dir = paste(
+    "viztest", pkg_name(pkg), pkg_version(pkg),
+    sep = "-"
   ),
   ...,
   delay = 2,
@@ -66,8 +76,7 @@ viztest <- function(
   }
 
   # make sure it's the latest docs
-  pkg <- devtools::as.package(pkg)
-  devtools::document(pkg)
+  pkg <- as_pkg(pkg)
 
   # install locally
   cran_dir <- file.path(output_dir, rel_cran_dir)
@@ -199,7 +208,7 @@ packageVersion(\"", pkg$package, "\")
   knit_examples(old_pkg, cran_dir, cache = TRUE)
 
   message("\nRunning local library on local examples")
-  knit_examples(paste0(pkg$package, "-", pkg$version), local_dir, cache = cache)
+  knit_examples(paste0(pkg_name(pkg), "-", pkg_version(pkg)), local_dir, cache = cache)
 
   viz_compare(output_dir, resize = resize, browse = browse)
 }
