@@ -16,7 +16,10 @@ Imports:
     shinytest,
     utils,
     purrr,
-    htmlwidgets
+    htmlwidgets,
+    webshot,
+    glue,
+    callr
 Remotes:
-    schloerke/webshot@appshot_shinyapp
+    winston/webshot
 RoxygenNote: 6.0.1
