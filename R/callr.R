@@ -7,14 +7,30 @@ callr_document <- function(pkg) {
     },
     list(
       pkg = pkg
-    )
+    ),
+    show = TRUE
+  )
+}
+callr_install <- function(pkg, location) {
+  callr::r(
+    function(pkg, location) {
+      switch(location,
+        "local" = devtools::install(pkg, reload = FALSE),
+        "github" = devtools::install_github(pkg, reload = FALSE),
+        "cran" = devtools::install_cran(pkg, reload = FALSE)
+      )
+    },
+    list(
+      pkg = pkg,
+      location = location
+    ),
+    show = TRUE
   )
 }
 
 
 callr_render_infos <- function(rd_names, render_infos, save_individual) {
-  p <- callr::r_bg(
-  # p <- callr::r(
+  p <- callr::r(
     function(rd_names, render_infos, save_individual) {
       pb <- progress::progress_bar$new(
         total = length(render_infos),
@@ -27,11 +43,19 @@ callr_render_infos <- function(rd_names, render_infos, save_individual) {
 
       purrr::map2(rd_names, render_infos, function(rd_name, render_info) {
         pb$tick(tokens = list(rd_name = rd_name))
-        if (save_individual) {
-          rmarkdown::render(render_info, quiet = TRUE, output_format = 'all')
-        } else {
-          knitr::knit(text = render_info, quiet = TRUE)
-        }
+        tryCatch(
+          {
+            if (save_individual) {
+              rmarkdown::render(render_info, quiet = TRUE, output_format = 'all')
+            } else {
+              knitr::knit(text = render_info, quiet = TRUE)
+            }
+          },
+          error = function(e) {
+            message(e)
+            FALSE
+          }
+        )
       })
       invisible()
     },
@@ -40,21 +64,11 @@ callr_render_infos <- function(rd_names, render_infos, save_individual) {
       render_infos = render_infos,
       save_individual = save_individual
     ),
-    stdout = "|", stderr = "|"
+    show = TRUE
   )
   on.exit({
     p$kill()
   })
-  cat_n <- function(txt) {
-    if (length(txt) > 0) {
-      cat(txt, sep = "\n")
-    }
-  }
-  while(p$is_alive()) {
-    p$wait(500) # wait until min(c(time_ms, process ends))
-    cat_n(p$read_error_lines())
-    cat_n(p$read_output_lines())
-  }
   invisible()
 }
 
