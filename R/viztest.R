@@ -132,6 +132,9 @@ viztest <- function(
 '---
 title: "<< pkg$package >> viztest - << file >>"
 date: "<< format(Sys.Date(), "%m/%d/%Y") >>"
+output:
+  md_document: default
+  html_document: default
 ---
 
 ```{r, eval = FALSE, include = FALSE}
@@ -141,13 +144,13 @@ withr::with_dir("<< normalizePath(".") >>", {
     "<< normalizePath(rel_lib_dir) >>",
     action = "prefix",
     {
-      knitr::knit("<< file >>.Rmd")
+      rmarkdown::render("<< file >>.Rmd", output_format = "all")
     }
   )
 })
 ```
 
-```{r _knitr_setup, include = FALSE }
+```{r _knitr_setup, include = FALSE, cache = FALSE }
 library(knitr)
 opts_chunk$set(
   cache = << cache >>,

@@ -16,7 +16,7 @@ callr_document <- function(pkg) {
 callr_knit_file <- function(file) {
   callr::r(
     function(file) {
-      knitr::knit(file, quiet = TRUE)
+      rmarkdown::render(file, quiet = TRUE, output_format = 'all')
     },
     list(
       file = file

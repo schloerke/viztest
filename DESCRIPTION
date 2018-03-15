@@ -16,6 +16,7 @@ Imports:
     shinytest,
     utils,
     purrr,
+    rmarkdown,
     htmlwidgets,
     webshot,
     glue,
