@@ -180,18 +180,10 @@ packageVersion("<< pkg_name(pkg) >>")
     }
 
     # run each rmd example independently
-    pb <- progress::progress_bar$new(
-      total = length(rd_txts),
-      format = paste0(":current/:total ellapsed::elapsed eta::eta [:bar] :rd_name"),
-      show_after = 0,
-      clear = FALSE
-    )
-    pb$tick(0)
-
     withr::with_dir(example_dir, {
       withr::with_libpaths(rel_lib_dir, action = "prefix", {
 
-        purrr::map2(rd_names, rd_txts, function(rd_name, rd_txt) {
+        render_infos <- purrr::map2(rd_names, rd_txts, function(rd_name, rd_txt) {
           knitr_head_txt <- make_knitr_head_txt(rd_name)
           knitr_txt <- paste0(
             knitr_head_txt,
@@ -201,16 +193,18 @@ packageVersion("<< pkg_name(pkg) >>")
             rd_txt, "\n",
             "```"
           )
-
-          pb$tick(tokens = list(rd_name = rd_name))
           if (isTRUE(save_individual)) {
             save_file <- paste0(rd_name, ".Rmd")
             cat(knitr_txt, file = save_file)
-            callr_knit_file(save_file)
+            save_file
           } else {
-            callr_knit_text(knitr_txt)
+            knitr_txt
           }
         })
+        render_infos <- unlist(render_infos)
+
+        callr_render_infos(rd_names, render_infos, isTRUE(save_individual))
+        invisible()
       })
     })
   }
