@@ -7,8 +7,9 @@
 viztest(pkg = ".", old_pkg = pkg_name(pkg), output_dir = paste("viztest",
   pkg_name(pkg), pkg_version(pkg), sep = "-"), ..., delay = 2,
   fig.width = 8, fig.height = 6, vwidth = 992, vheight = 744,
-  test = TRUE, run = FALSE, stomp = FALSE, cache = TRUE,
-  document = TRUE, save_individual = TRUE, resize = TRUE, browse = TRUE)
+  test = TRUE, run = FALSE, stomp = FALSE, skip_old = FALSE,
+  cache = FALSE, document = TRUE, save_individual = TRUE, resize = TRUE,
+  browse = TRUE)
 }
 \arguments{
 \item{pkg}{Local R package to load with devtools}
@@ -35,9 +36,11 @@ If \code{FALSE}, code in \code{\\testonly{}} will be commented out.}
 \item{stomp}{If \code{TRUE}, allows \code{viztest} to reexecute in an existing output
 directory}
 
+\item{skip_old}{If \code{TRUE}, the old folder will not be deleted and
+the old package will not be executed}
+
 \item{cache}{If \code{TRUE}, the local R package examples will be cached with knitr
-for faster execution.  The \code{old_pkg} will always be cached as it's source
-code does not change.}
+for faster execution.}
 
 \item{document}{If \code{TRUE}, the local package will be documented before the
 examples are extracted}

@@ -34,9 +34,10 @@ pkg_version <- function(pkg) {
 #' @param run If \code{TRUE}, code in \code{\\dontrun{}} will be commented out.
 #' @param stomp If \code{TRUE}, allows \code{viztest} to reexecute in an existing output
 #'        directory
+#' @param skip_old If \code{TRUE}, the old folder will not be deleted and
+#'        the old package will not be executed
 #' @param cache If \code{TRUE}, the local R package examples will be cached with knitr
-#'        for faster execution.  The \code{old_pkg} will always be cached as it's source
-#'        code does not change.
+#'        for faster execution.
 #' @param document If \code{TRUE}, the local package will be documented before the
 #'        examples are extracted
 #' @param save_individual If \code{TRUE}, individual example knitr files will be saved
@@ -61,7 +62,8 @@ viztest <- function(
   vheight = 744,
   test = TRUE, run = FALSE,
   stomp = FALSE,
-  cache = TRUE,
+  skip_old = FALSE,
+  cache = FALSE,
   document = TRUE,
   save_individual = TRUE,
   resize = TRUE,
@@ -76,8 +78,6 @@ viztest <- function(
         "Or use `stomp != TRUE`"
       )
     }
-    # message("Deleting folder: ", output_dir)
-    # unlink(output_dir, recursive = TRUE)
   }
 
   # make sure it's the latest docs
@@ -92,25 +92,6 @@ viztest <- function(
   local_dir <- file.path(output_dir, rel_local_dir)
   cran_lib_dir <- file.path(cran_dir, rel_lib_dir)
   local_lib_dir <- file.path(local_dir, rel_lib_dir)
-  lapply(
-    c(cran_lib_dir,local_lib_dir),
-    dir.create,
-    recursive = TRUE, showWarnings = FALSE
-  )
-
-  message("\n\nInstalling old version")
-  withr::with_libpaths(cran_lib_dir, action = "prefix", {
-    if (grepl("/", old_pkg, fixed = TRUE)) {
-      devtools::install_github(old_pkg, reload = FALSE)
-    } else {
-      devtools::install_cran(old_pkg, reload = FALSE)
-    }
-    # pkgman::pkg_install(old_pkg)
-  })
-  message("\n\nInstalling new, local version")
-  withr::with_libpaths(local_lib_dir, action = "prefix", {
-    devtools::install(pkg, reload = FALSE)
-  })
 
   # get all the doc files from the local pkg
   devtools_rd_files <- utils::getFromNamespace("rd_files", "devtools")
@@ -219,10 +200,36 @@ packageVersion("<< pkg_name(pkg) >>")
     })
   }
 
-  message("\nRunning CRAN library on local examples")
-  knit_examples(old_pkg, cran_dir, cache = TRUE)
+  if (isTRUE(skip_old)) {
+    message("\nSkipping old version")
+  } else {
+    message("Deleting 'old' folder")
+    unlink(cran_dir, recursive = TRUE)
 
-  message("\nRunning local library on local examples")
+    dir.create(cran_lib_dir, recursive = TRUE, showWarnings = FALSE)
+    message("\n\nInstalling old version")
+    withr::with_libpaths(cran_lib_dir, action = "prefix", {
+      if (grepl("/", old_pkg, fixed = TRUE)) {
+        callr_install(old_pkg, "github")
+      } else {
+        callr_install(old_pkg, "cran")
+      }
+      # pkgman::pkg_install(old_pkg)
+    })
+    message("\nRunning old version on new examples")
+    knit_examples(old_pkg, cran_dir, cache = cache)
+  }
+
+
+
+  message("\nDeleting 'new' folder")
+  unlink(local_dir, recursive = TRUE)
+  message("\nInstalling new, local version")
+  dir.create(local_lib_dir, recursive = TRUE, showWarnings = FALSE)
+  withr::with_libpaths(local_lib_dir, action = "prefix", {
+    callr_install(pkg, location = "local")
+  })
+  message("\nRunning new version on new examples")
   knit_examples(paste0(pkg_name(pkg), "-", pkg_version(pkg)), local_dir, cache = cache)
 
   viz_compare(output_dir, resize = resize, browse = browse)
