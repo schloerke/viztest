@@ -101,15 +101,15 @@ viztest <- function(
   message("\n\nInstalling old version")
   withr::with_libpaths(cran_lib_dir, action = "prefix", {
     if (grepl("/", old_pkg, fixed = TRUE)) {
-      devtools::install_github(old_pkg)
+      devtools::install_github(old_pkg, reload = FALSE)
     } else {
-      devtools::install_cran(old_pkg)
+      devtools::install_cran(old_pkg, reload = FALSE)
     }
     # pkgman::pkg_install(old_pkg)
   })
   message("\n\nInstalling new, local version")
   withr::with_libpaths(local_lib_dir, action = "prefix", {
-    devtools::install(pkg)
+    devtools::install(pkg, reload = FALSE)
   })
 
   # get all the doc files from the local pkg
