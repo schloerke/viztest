@@ -11,8 +11,20 @@
 #' @importFrom stats runif
 viz_compare <- function(output_dir, resize = TRUE, browse = TRUE) {
   withr::with_dir(output_dir, {
-    cran_images <- file.path(rel_cran_dir, rel_images_dir)
-    local_images <- file.path(rel_local_dir, rel_images_dir)
+    find_img_dir <- function(dir) {
+      for (img_dir in c(
+        paste0(rel_images_dir, "_", "markdown_strict"),
+        paste0(rel_images_dir)
+      )) {
+        img_path <- file.path(dir, img_dir)
+        if (dir.exists(img_path)) {
+          return(img_path)
+        }
+      }
+      stop("Could not find output image dir")
+    }
+    cran_images <- find_img_dir(rel_cran_dir)
+    local_images <- find_img_dir(rel_local_dir)
 
     if (!(is.null(resize) || identical(resize, FALSE))) {
       if (isTRUE(resize)) {
