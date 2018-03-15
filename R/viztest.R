@@ -133,7 +133,8 @@ viztest <- function(
 title: "<< pkg$package >> viztest - << file >>"
 date: "<< format(Sys.Date(), "%m/%d/%Y") >>"
 output:
-  md_document: default
+  md_document:
+    variant: markdown_strict
   html_document: default
 ---
 
@@ -152,10 +153,19 @@ withr::with_dir("<< normalizePath(".") >>", {
 
 ```{r _knitr_setup, include = FALSE, cache = FALSE }
 library(knitr)
+cache_folder <- "<< rel_cache_dir >>"
+images_folder <- "<< rel_images_dir >>"
+pandoc_to <- knitr::opts_knit$get("rmarkdown.pandoc.to")
+if (!is.null(pandoc_to)) {
+  cache_folder <- paste0(cache_folder, "_", pandoc_to)
+  images_folder <- paste0(images_folder, "_", pandoc_to)
+}
+cache_folder <- paste0(cache_folder, .Platform$file.sep)
+images_folder <- paste0(images_folder, .Platform$file.sep)
 opts_chunk$set(
   cache = << cache >>,
-  cache.path = "<< rel_cache_dir >><< .Platform$file.sep >>",
-  fig.path = "<< rel_images_dir >><< .Platform$file.sep >>",
+  cache.path = cache_folder,
+  fig.path = images_folder,
   fig.width = << fig.width >>,
   fig.height = << fig.height >>,
   screenshot.opts = list(
