@@ -12,6 +12,7 @@ Imports:
     progress,
     withr,
     tools,
+    remotes,
     knitr,
     shinytest,
     utils,
@@ -22,5 +23,6 @@ Imports:
     glue,
     callr
 Remotes:
-    winston/webshot
+    winston/webshot,
+    r-lib/crancache
 RoxygenNote: 6.0.1

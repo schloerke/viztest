@@ -1,3 +1,4 @@
+rel_remotes_dir <- "remotes_lib"
 rel_lib_dir <- "_lib"
 rel_images_dir <- "_images"
 rel_cache_dir <- "_cache"

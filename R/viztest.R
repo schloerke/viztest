@@ -90,6 +90,7 @@ viztest <- function(
   # install locally
   cran_dir <- file.path(output_dir, rel_cran_dir)
   local_dir <- file.path(output_dir, rel_local_dir)
+  remotes_lib_dir <- file.path(output_dir, rel_remotes_dir)
   cran_lib_dir <- file.path(cran_dir, rel_lib_dir)
   local_lib_dir <- file.path(local_dir, rel_lib_dir)
 
@@ -200,6 +201,13 @@ packageVersion("<< pkg_name(pkg) >>")
     })
   }
 
+  dir.create(remotes_lib_dir, recursive = TRUE, showWarnings = FALSE)
+  withr::with_libpaths(remotes_lib_dir, {
+    devtools::install_cran("remotes", reload = FALSE)
+    devtools::install_cran("callr", reload = FALSE)
+    devtools::install_github("r-lib/crancache", reload = FALSE)
+  })
+
   if (isTRUE(skip_old)) {
     message("\nSkipping old version")
   } else {
@@ -208,7 +216,7 @@ packageVersion("<< pkg_name(pkg) >>")
 
     dir.create(cran_lib_dir, recursive = TRUE, showWarnings = FALSE)
     message("\n\nInstalling old version")
-    withr::with_libpaths(cran_lib_dir, action = "prefix", {
+    withr::with_libpaths(c(cran_lib_dir, remotes_lib_dir), action = "replace", {
       if (grepl("/", old_pkg, fixed = TRUE)) {
         callr_install(old_pkg, "github")
       } else {
@@ -226,8 +234,8 @@ packageVersion("<< pkg_name(pkg) >>")
   unlink(local_dir, recursive = TRUE)
   message("\nInstalling new, local version")
   dir.create(local_lib_dir, recursive = TRUE, showWarnings = FALSE)
-  withr::with_libpaths(local_lib_dir, action = "prefix", {
-    callr_install(pkg, location = "local")
+  withr::with_libpaths(c(local_lib_dir, remotes_lib_dir), action = "replace", {
+    callr_install(pkg$path, location = "local")
   })
   message("\nRunning new version on new examples")
   knit_examples(paste0(pkg_name(pkg), "-", pkg_version(pkg)), local_dir, cache = cache)

@@ -15,9 +15,9 @@ callr_install <- function(pkg, location) {
   callr::r(
     function(pkg, location) {
       switch(location,
-        "local" = devtools::install(pkg, reload = FALSE),
-        "github" = devtools::install_github(pkg, reload = FALSE),
-        "cran" = devtools::install_cran(pkg, reload = FALSE)
+        "local" = remotes::install_local(pkg),
+        "github" = remotes::install_github(pkg),
+        "cran" = remotes::install_version(pkg)
       )
     },
     list(
@@ -53,7 +53,7 @@ callr_render_infos <- function(rd_names, render_infos, save_individual) {
           },
           error = function(e) {
             message(e)
-            FALSE
+            NULL
           }
         )
       })
@@ -66,12 +66,5 @@ callr_render_infos <- function(rd_names, render_infos, save_individual) {
     ),
     show = TRUE
   )
-  on.exit({
-    p$kill()
-  })
   invisible()
-}
-
-
-print_process <- function(p) {
 }
