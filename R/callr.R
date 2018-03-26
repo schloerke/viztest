@@ -52,10 +52,11 @@ callr_render_infos <- function(rd_names, render_infos, save_individual) {
             }
           },
           error = function(e) {
-            message(e)
+            message("", e) # must keep "" to avoid from throwing in parent process
             NULL
           }
         )
+        invisible()
       })
       invisible()
     },
