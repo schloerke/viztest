@@ -15,9 +15,9 @@ callr_install <- function(pkg, location) {
   callr::r(
     function(pkg, location) {
       switch(location,
-        "local" = remotes::install_local(pkg),
-        "github" = remotes::install_github(pkg),
-        "cran" = remotes::install_version(pkg)
+        "local" = remotes::install_local(pkg, dependencies = TRUE),
+        "github" = remotes::install_github(pkg, dependencies = TRUE),
+        "cran" = remotes::install_version(pkg, dependencies = TRUE)
       )
     },
     list(
